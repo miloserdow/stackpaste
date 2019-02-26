@@ -5,6 +5,7 @@ import requests
 import json
 
 import re
+import parser
 
 from html.parser import HTMLParser
 
@@ -13,6 +14,23 @@ from html.parser import HTMLParser
 
 def unescape(lst):
     return HTMLParser().unescape(lst)
+
+
+''' Returns list of all variables in source '''
+def get_vars(source):
+    vars = []
+
+    def dfs(T):
+        if len(T) == 2 and T[0] == 1 and isinstance(T[1], str):
+            if T[1] not in vars:
+                vars.append(T[1])
+        for x in T:
+            if isinstance(x, tuple):
+                dfs(x)
+
+    ST = parser.suite(source)
+    dfs(ST.totuple())
+    return vars
 
 
 def get_snippets(text):
